@@ -42,10 +42,9 @@ builder.Services.AddDistributedSqlServerCache(options =>
 
 });
 
-
 builder.Services.AddAutoMapper(typeof(MapProfile));
 
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Gizli Key"));
+var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Burasý çok ama çok gizli bir ifade"));
 var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>

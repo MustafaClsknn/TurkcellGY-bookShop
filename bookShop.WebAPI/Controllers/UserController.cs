@@ -102,9 +102,10 @@ namespace bookShop.WebAPI.Controllers
                     new Claim(ClaimTypes.Role, user.Role),
                 };
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Gizli Key"));
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Burası çok ama çok gizli bir ifade"));
                 var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+                //3.tokenin özelliklerini tanımla
 
                 var token = new JwtSecurityToken(
                     issuer: "turkcell.com.tr",
