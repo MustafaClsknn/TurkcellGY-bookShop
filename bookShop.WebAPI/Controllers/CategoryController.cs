@@ -45,6 +45,10 @@ namespace bookShop.WebAPI.Controllers
             var success = await _categoryService.AddAsync(category);
             if (success)
             {
+                var categories = await _categoryService.GetAllEntitiesAsyncDto();
+                var values = JsonConvert.SerializeObject(categories);
+                var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                _cache.SetString("categories", values, option);
                 return Ok();
             }
             return NotFound();
@@ -65,15 +69,19 @@ namespace bookShop.WebAPI.Controllers
 
         [HttpPut]
         [Route("Update")]
-        public IActionResult Update(Category category)
+        public async Task<IActionResult> Update(Category category)
         {
 
-                var success = _categoryService.Update(category);
-                if (success)
-                {
-                    return Ok();
-                }
-                return BadRequest();
+            var success = _categoryService.Update(category);
+            if (success)
+            {
+                var categories = await _categoryService.GetAllEntitiesAsyncDto();
+                var values = JsonConvert.SerializeObject(categories);
+                var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                _cache.SetString("categories", values, option);
+                return Ok();
+            }
+            return BadRequest();
 
         }
 
@@ -84,6 +92,10 @@ namespace bookShop.WebAPI.Controllers
             {
                 if (await _categoryService.SoftDeleteAsync(id))
                 {
+                    var categories = await _categoryService.GetAllEntitiesAsyncDto();
+                    var values = JsonConvert.SerializeObject(categories);
+                    var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                    _cache.SetString("categories", values, option);
                     return Ok(true);
                 }
 

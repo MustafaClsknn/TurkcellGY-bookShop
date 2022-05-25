@@ -81,10 +81,15 @@ namespace bookShop.DataAccess.Concrete.EntityFramework
 
         public bool Update(User entity)
         {
-            entityEntry = _context.Users.Update(entity);
+            bool success = true;
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(entity.Password);
+            entity.Password = passwordHash;
             entity.ModifiedDate = DateTime.Now;
+            entityEntry = _context.Users.Update(entity);
+            success = entityEntry.State == EntityState.Modified;
             _context.SaveChanges();
-            return entityEntry.State == EntityState.Modified;
+
+            return success;
         }
     }
 }

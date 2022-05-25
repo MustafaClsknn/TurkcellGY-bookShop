@@ -45,6 +45,10 @@ namespace bookShop.WebAPI.Controllers
             var success = await _writerService.AddAsync(writer);
             if (success)
             {
+                var writers = await _writerService.GetAllEntitiesAsyncDto();
+                var values = JsonConvert.SerializeObject(writers);
+                var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                _cache.SetString("writers", values, option);
                 return Ok();
             }
             return BadRequest();
@@ -64,13 +68,17 @@ namespace bookShop.WebAPI.Controllers
 
         [HttpPut]
         [Route("Update")]
-        public IActionResult Update(Writer writer)
+        public async Task<IActionResult> Update(Writer writer)
         {
 
             var success = _writerService.Update(writer);
             if (success)
             {
-                return RedirectToAction(nameof(Index));
+                var writers = await _writerService.GetAllEntitiesAsyncDto();
+                var values = JsonConvert.SerializeObject(writers);
+                var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                _cache.SetString("writers", values, option);
+                return Ok();
             }
             return BadRequest();
 
@@ -81,6 +89,10 @@ namespace bookShop.WebAPI.Controllers
             if (await _writerService.IsExistsAsync(id))
             {
                 await _writerService.SoftDeleteAsync(id);
+                var writers = await _writerService.GetAllEntitiesAsyncDto();
+                var values = JsonConvert.SerializeObject(writers);
+                var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                _cache.SetString("writers", values, option);
                 return Ok(true);
             }
 

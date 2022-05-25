@@ -43,7 +43,7 @@ namespace bookShop.Web.Controllers
             }
             else
             {
-                books = await _bookService.GetAllEntitiesAsync();
+                books = await _bookService.GetAllEntitiesAsyncDto();
             }
 
             var booksPerPage = 3;

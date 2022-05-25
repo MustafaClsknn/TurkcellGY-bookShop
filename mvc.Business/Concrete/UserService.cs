@@ -49,9 +49,9 @@ namespace bookShop.Business.Concrete
         } 
 
 
-        public Task<IList<User>> GetAllEntitiesAsync()
+        public async Task<IList<User>> GetAllEntitiesAsync()
         {
-            throw new NotImplementedException();
+            return await _userRepository.GetAllEntitiesAsync();
         }
 
         public async Task<IEnumerable<UserListResponse>> GetAllEntitiesAsyncDto()
@@ -61,9 +61,9 @@ namespace bookShop.Business.Concrete
             return users;
         }
 
-        public Task<User> GetEntityByIdAsync(int id)
+        public async Task<User> GetEntityByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _userRepository.GetEntityByIdAsync(id);
         }
 
         public async Task<bool> IsExistsAsync(int id)
@@ -83,7 +83,7 @@ namespace bookShop.Business.Concrete
 
         public bool Update(User entity)
         {
-            throw new NotImplementedException();
+            return _userRepository.Update(entity);
         }
 
         public async Task<User> ValidateUser(string userName, string password)
@@ -103,7 +103,6 @@ namespace bookShop.Business.Concrete
                     
                 }
             }
-            
             return null;
         }
     }

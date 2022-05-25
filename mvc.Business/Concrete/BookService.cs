@@ -68,13 +68,17 @@ namespace bookShop.Business.Concrete
             return await _bookRepository.DeleteAsync(id);
         }
 
-        public async Task<IList<BookListResponse>> GetAllEntitiesAsync()
+        public async Task<IList<BookListResponse>> GetAllEntitiesAsyncDto()
         {
             var book = await _bookRepository.GetAllEntitiesAsync();
             var books = _mapper.Map<IList<BookListResponse>>(book);
             return books;
         }
 
+        public async Task<IList<Book>> GetAllEntitiesAsync() 
+        {
+            return await _bookRepository.GetAllEntitiesAsync();
+        }
         public async Task<Book> GetEntityByIdAsync(int id)
         {
             return await _bookRepository.GetEntityByIdAsync(id);
@@ -97,16 +101,10 @@ namespace bookShop.Business.Concrete
            return await _bookRepository.SearchEntitiesByNameAsync(name);
         }
 
-        public async Task<IList<Book>> SearchEntitiesByNameAsync(IList<string> name)
-        {
-           return await _bookRepository.SearchEntitiesByNameAsync(name);
-        }
-
+ 
         public IList<BookListResponse> SearchEntitiesByNameAsync(IList<string> name, IList<string> publisher)
         {
-
             string s;
-
             List<int> categories = new List<int>();
             List<int> publishers = new List<int>();
             foreach (var item in name)
@@ -143,14 +141,6 @@ namespace bookShop.Business.Concrete
             return _bookRepository.Update(book);
         }
 
-        Task<IList<Book>> IGenericService<Book>.GetAllEntitiesAsync()
-        {
-            throw new NotImplementedException();
-        }
 
-        Task<IList<BookListResponse>> IBookService.SearchEntitiesByNameAsync(IList<string> name)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

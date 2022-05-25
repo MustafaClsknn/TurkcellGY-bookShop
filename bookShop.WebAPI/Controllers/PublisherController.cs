@@ -44,6 +44,10 @@ namespace bookShop.WebAPI.Controllers
             var success = await _publisherService.AddAsync(publisher);
             if (success)
             {
+                var publishers = await _publisherService.GetAllEntitiesAsyncDto();
+                var values = JsonConvert.SerializeObject(publishers);
+                var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                _cache.SetString("publishers", values, option);
                 return Ok(true);
             }
             return BadRequest();
@@ -64,12 +68,16 @@ namespace bookShop.WebAPI.Controllers
 
         [HttpPut]
         [Route("Update")]
-        public IActionResult Update(Publisher publisher)
+        public async Task<IActionResult> Update(Publisher publisher)
         {
 
             var success = _publisherService.Update(publisher);
             if (success)
             {
+                var publishers = await _publisherService.GetAllEntitiesAsyncDto();
+                var values = JsonConvert.SerializeObject(publishers);
+                var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                _cache.SetString("publishers", values, option);
                 return Ok(true);
             }
             return BadRequest();
@@ -82,6 +90,10 @@ namespace bookShop.WebAPI.Controllers
             if (await _publisherService.IsExistsAsync(id))
             {
                 await _publisherService.SoftDeleteAsync(id);
+                var publishers = await _publisherService.GetAllEntitiesAsyncDto();
+                var values = JsonConvert.SerializeObject(publishers);
+                var option = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(1));
+                _cache.SetString("publishers", values, option);
                 return Ok(true);
             }
 

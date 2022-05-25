@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -54,13 +55,75 @@ namespace bookShop.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool success = await _userService.AddAsync(user);
-                return RedirectToAction(nameof(Login));
+                /*bool success = await _userService.AddAsync(user);
+                return RedirectToAction(nameof(Login));*/
+                var json = JsonConvert.SerializeObject(user);
+                var httpClient = new HttpClient();
+                StringContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var responseMessage = await httpClient.PostAsync("https://localhost:7084/api/user/create", httpContent);
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Login","Users");
+                }
             }
 
             return View();
         }
-      
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id) 
+        {
+            ViewBag.UserRole = GetUserRoleDropDown();
+            // if (await _userService.IsExistsAsync(id))
+            //{
+            //    var user = await _userService.GetEntityByIdAsync(id);
+            //    return View(user);
+            //}
+            //return NotFound();
+            if (await _userService.IsExistsAsync(id))
+            {
+                var httpClient = getClient();
+                var responseMessage = await httpClient.GetAsync("https://localhost:7084/api/user/" + id);
+                var jsonString = await responseMessage.Content.ReadAsStringAsync();
+                var user1 = JsonConvert.DeserializeObject(jsonString).ToString();
+                var user = JsonConvert.DeserializeObject<User>(user1);
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    return View(user);
+                }
+            }
+            return NotFound();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(User user) 
+        {
+            //if (ModelState.IsValid)
+            //{
+            //    var success = _userService.Update(user);
+            //    if (success)
+            //    {
+            //        return RedirectToAction(nameof(Index));
+            //    }
+            //    return BadRequest();
+            //}
+            //return View();
+
+            if (ModelState.IsValid)
+            {
+                var httpClient = getClient();
+                var json = JsonConvert.SerializeObject(user);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                var responseMessage = await httpClient.PutAsync("https://localhost:7084/api/user", content);
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                return BadRequest();
+            }
+            return View();
+        }
+
         [HttpGet]
         public IActionResult PanelRegister()
         {
@@ -71,11 +134,18 @@ namespace bookShop.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                //bool success = await _userService.AddAsync(user);
+                //return RedirectToAction(nameof(PanelLogin));
 
-                bool success = await _userService.AddAsync(user);
+                var json = JsonConvert.SerializeObject(user);
+                var httpClient = new HttpClient();
+                StringContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var responseMessage = await httpClient.PostAsync("https://localhost:7084/api/user/panelcreate", httpContent);
 
-
-                return RedirectToAction(nameof(PanelLogin));
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("PanelLogin", "Users");
+                }
             }
 
             return View();
@@ -178,6 +248,17 @@ namespace bookShop.Web.Controllers
               new AuthenticationHeaderValue("Bearer", jwt.Token);*/
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt.Token);
             return httpClient;
+        }
+        public List<SelectListItem> GetUserRoleDropDown()
+        {
+
+            var userRole = new List<SelectListItem>();
+
+            userRole.Add(new SelectListItem { Text = "Admin", Value = "Admin" });
+            userRole.Add(new SelectListItem { Text = "Editor", Value = "Editor" });
+            userRole.Add(new SelectListItem { Text = "Client", Value = "Client" });
+
+            return userRole;
         }
     }
 }

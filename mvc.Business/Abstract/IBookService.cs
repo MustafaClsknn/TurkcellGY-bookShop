@@ -11,9 +11,9 @@ namespace bookShop.Business.Abstract
 {
     public interface IBookService : IGenericService<Book>
     {
-        Task<IList<BookListResponse>> SearchEntitiesByNameAsync(IList<string> name);
+
         IList<BookListResponse> SearchEntitiesByNameAsync(IList<string> name, IList<string> publisher);
-        Task<IList<BookListResponse>> GetAllEntitiesAsync();
+        Task<IList<BookListResponse>> GetAllEntitiesAsyncDto();
         Task<Book> GetEntityByIdAsyncWithoutInclude(int id);
         Task<UpdateBookResponse> GetEntityByIdAsyncDto(int id);
          Task<bool> AddAsync(AddBookRequest entity);

@@ -33,60 +33,39 @@ namespace bookShop.WebAPI.Controllers
             return Ok(json);
         }
 
-        [HttpPost]
-        [Route("Register")]
-        public async Task<IActionResult> Register(AddUserRequest user)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id)
         {
-
-            bool success = await _userService.AddAsync(user);
-            return Ok(success);
-        }
-
-        [HttpPost]
-        [Route("PanelRegister")]
-        public async Task<IActionResult> PanelRegister(AddUserRequest user)
-        {
-
-            bool success = await _userService.AddAsync(user);
-            return Ok(success);
-
-        }
-
-        [HttpPost]
-        [Route("Login")]
-        public async Task<IActionResult> Login(User user, string returnUrl)
-        {
-            if (ModelState.IsValid)
+            if (await _userService.IsExistsAsync(id))
             {
-                var user2 = await _userService.ValidateUser(user.UserName, user.Password);
-                if (user2 != null)
-                {
-                    List<Claim> claims = new List<Claim>()
-                    {
-                        new Claim(ClaimTypes.Name, user2.UserName),
-                        new Claim(ClaimTypes.Email, user2.UserMail),
-                        new Claim(ClaimTypes.Role, user2.Role),
-                    };
-                    ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                    await HttpContext.SignInAsync(claimsPrincipal);
-                    if (Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
-                    }
-                }
-                ModelState.AddModelError("login", "kullanıcı adı veya şifre hatalı");
-
+                var user = await _userService.GetEntityByIdAsync(id);
+                var json = JsonConvert.SerializeObject(user);
+                return Ok(json);
             }
-            return Ok();
+            return NotFound();
         }
 
-        [HttpGet]
-        [Route("Logout")]
-        public async Task<IActionResult> Logout()
+        [HttpPost]
+        [Route("Create")]
+        public async Task<IActionResult> Create(AddUserRequest user)
         {
-            await HttpContext.SignOutAsync();
-            return Redirect("/");
+
+            bool success = await _userService.AddAsync(user);
+            if (success) 
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        [Route("PanelCreate")]
+        public async Task<IActionResult> PanelCreate(AddUserRequest user)
+        {
+
+            bool success = await _userService.AddAsync(user);
+            return Ok(success);
+
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -99,7 +78,16 @@ namespace bookShop.WebAPI.Controllers
 
             return NotFound();
         }
-
+        [HttpPut]
+        public IActionResult Update(User user) 
+        {
+            bool success = _userService.Update(user);
+            if (success)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
         [HttpPost]
         [Route("LoginJWT")]
         public async Task<IActionResult> LoginJWT(User model)

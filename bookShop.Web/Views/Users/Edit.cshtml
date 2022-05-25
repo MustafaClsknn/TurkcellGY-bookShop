@@ -1,8 +1,39 @@
-﻿
+﻿@model User
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Edit</h1>
 
+<div class="card mt-2">
+    <div class="card-body">
+        <form action="Edit" method="post">
+            <input style="display:none" name="Id" value="@Model.Id"/>
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Kullanıcı Adı</label>
+                    <input class="form-control" name="UserName" value="@Model.UserName" />
+                    <label>Kullanıcı Ad Soyad</label>
+                    <input class="form-control" name="FullName" value="@Model.FullName" />
+                    <label>KUllanıcı Mail</label>
+                    <input class="form-control" name="UserMail" value="@Model.UserMail" />
+                </div>
+                <div class="col-md-4">
+                    <label>Telefon Numarası</label>
+                    <input class="form-control" name="PhoneNumber" value="@Model.PhoneNumber" />
+                    <label>Şifre</label>
+                    <input class="form-control" name="Password" value="@Model.Password" />
+                    <label>Resim Yolu</label>
+                    <input class="form-control" name="ImageUrl" value="@Model.ImageUrl" />
+
+                </div>
+                <div class="col-md-4">
+                    <label>Rol</label>
+                    <select class="form-control" asp-for="Role" asp-items="ViewBag.UserRole"></select>
+                    <button id="btnEkle" class="btn btn-success mt-1" type="submit">Kaydet</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>

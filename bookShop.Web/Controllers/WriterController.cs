@@ -109,7 +109,7 @@ namespace bookShop.Web.Controllers
                 var httpClient = getClient();
                 var json = JsonConvert.SerializeObject(writer);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                var responseMessage = await httpClient.PutAsync("https://localhost:7084/api/publisher/update", content);
+                var responseMessage = await httpClient.PutAsync("https://localhost:7084/api/writer/update", content);
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     return RedirectToAction(nameof(Index));
