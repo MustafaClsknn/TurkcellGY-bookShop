@@ -96,18 +96,15 @@ namespace bookShop.WebAPI.Controllers
 
             if (user != null)
             {
-                //1.claim bilgileri
                 var claims = new[]
                 {
                     new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
                     new Claim(ClaimTypes.Role, user.Role),
                 };
 
-                //2.gizli cümlenin üretilmesi
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Burası çok ama çok gizli bir ifade"));
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Gizli Key"));
                 var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                //3.tokenin özelliklerini tanımla
 
                 var token = new JwtSecurityToken(
                     issuer: "turkcell.com.tr",
